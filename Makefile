@@ -31,7 +31,7 @@ NACL_SDK_ROOT?=$(abspath $(dir $(THIS_MAKEFILE))../..)
 
 # Project Build flags
 WARNINGS:=-Wno-long-long -Wall -Wswitch-enum -pedantic -Werror
-CXXFLAGS:=-pthread -std=gnu++98 $(WARNINGS)
+CXXFLAGS:=-pthread -std=gnu++98 $(WARNINGS) -I$(NACL_SDK_ROOT)/include
 
 #
 # Compute tool paths
