@@ -5,6 +5,7 @@ statusText = 'NO-STATUS';
 function moduleDidLoad() {
   HelloTutorialModule = document.getElementById('hello_tutorial');
   updateStatus('SUCCESS');
+  HelloTutorialModule.postMessage('this is a test');
 }
 
 // The 'message' event handler.  This handler is fired when the NaCl module
@@ -12,7 +13,7 @@ function moduleDidLoad() {
 // (in C) or pp::Instance.PostMessage() (in C++).  This implementation
 // simply displays the content of the message in an alert panel.
 function handleMessage(message_event) {
-  alert(message_event.data);
+  console.log('got message:' + message_event.data);
 }
 
 // If the page loads before the Native Client module loads, then set the

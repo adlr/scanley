@@ -59,7 +59,14 @@ class HelloTutorialInstance : public pp::Instance {
   /// with the parameter.
   /// @param[in] var_message The message posted by the browser.
   virtual void HandleMessage(const pp::Var& var_message) {
-    // TODO(sdk_user): 1. Make this function handle the incoming message.
+    if (!var_message.is_string())
+      return;
+    std::string message = var_message.AsString();
+    pp::Var var_reply;
+    for (size_t i = 0; i < message.size(); i++)
+      message[i] = toupper(message[i]);
+    var_reply = pp::Var(message);
+    PostMessage(var_reply);
   }
 };
 
