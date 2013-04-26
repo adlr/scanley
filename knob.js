@@ -74,24 +74,44 @@ var requestButton = document.getElementById("requestPermission");
 
 var amount = 0;
 
+
 var transfer = {
-  direction: 'in',
-  endpoint: 1,
-  length: 6
+  direction: 'out',
+  endpoint: 3,
+  data: new Uint8Array([01, 0x69, 00, 01]).buffer
 };
 
 var onEvent=function(usbEvent) {
+  console.log('onEvent called');
     if (usbEvent.resultCode) {
       console.log("Error: " + usbEvent.error);
       return;
     }
 
     var buffer = new Int8Array(usbEvent.data);
-    amount += buffer[1] * 4;
+    console.log("out: " + usbEvent.resultCode);
+    console.log(usbEvent.data);
+    // amount += buffer[1] * 4;
+    // 
+    // knob.style.webkitTransform = 'rotate(' + amount + 'deg)';
 
-    knob.style.webkitTransform = 'rotate(' + amount + 'deg)';
-
-    usb.interruptTransfer( powerMateDevice, transfer, onEvent );
+    //usb.interruptTransfer( powerMateDevice, transfer, onEvent );
+    console.log("reading result");
+    var inTransfer = {
+      direction: 'in',
+      endpoint: 2,
+      length: 1
+    };
+    usb.bulkTransfer(powerMateDevice, inTransfer, function(info) {
+      console.log('read return code: ' + info.resultCode);
+      console.log(info);
+      console.log("read back " + info.data.byteLength + ' bytes');
+      if (info.data.byteLength >= 1) {
+        console.log("byte value: " + (new Uint8Array(info.data))[0]);
+      }
+    });
+    
+    
   };
 
 var gotPermission = function(result) {
@@ -104,9 +124,13 @@ var gotPermission = function(result) {
           console.log('device not found');
           return;
         }
+        console.log(devices[0]);
         console.log('Found device: ' + devices[0].handle);
         powerMateDevice = devices[0];
-        usb.interruptTransfer(powerMateDevice, transfer, onEvent);
+        usb.claimInterface(powerMateDevice, 0, function() {
+          console.log("claimed!");
+          usb.bulkTransfer(powerMateDevice, transfer, onEvent);
+        });
     });
   };
 
