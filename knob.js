@@ -1,10 +1,12 @@
 HelloTutorialModule = null;  // Global application object.
 statusText = 'NO-STATUS';
+var usbHandler = null;
 
 // Indicate load success.
 function moduleDidLoad() {
   HelloTutorialModule = document.getElementById('hello_tutorial');
   updateStatus('SUCCESS');
+  usbHandler = new UsbHandler(HelloTutorialModule);
   HelloTutorialModule.postMessage('this is a test');
 }
 
@@ -14,6 +16,10 @@ function moduleDidLoad() {
 // simply displays the content of the message in an alert panel.
 function handleMessage(message_event) {
   console.log('got message:' + message_event.data);
+  if (usbHandler && usbHandler.HandleMessage(message_event.data)) {
+    console.log('USB handled message');
+    return;
+  }
 }
 
 // If the page loads before the Native Client module loads, then set the
